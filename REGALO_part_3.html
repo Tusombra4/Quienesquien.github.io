@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #e6e6fa; /* Cambia aquí a morado */
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            margin: 10px;
+            cursor: pointer; /* Agregado para que el cursor sea un puntero al pasar sobre la imagen */
+        }
+
+        .word-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .word {
+            padding: 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .selected {
+            border: 2px solid blue; /* Estilo de resaltado */
+        }
+
+        #congrats-message {
+            display: none;
+            font-size: 18px;
+            color: green;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Selecciona la imagen y la palabra correspondiente</h1>
+    <div class="container" id="game-container"></div>
+    <div class="word-container" id="word-container">
+        <div class="word" data-word="Mackenyu" onclick="handleSelection('Mackenyu')">Mackenyu</div>
+        <div class="word" data-word="Park seo joon" onclick="handleSelection('Park seo joon')">Park seo joon</div>
+        <div class="word" data-word="Jungkook" onclick="handleSelection('Jungkook')">Jungkook</div>
+        <div class="word" data-word="Cha eun woo" onclick="handleSelection('Cha eun woo')">Cha eun woo</div>
+        <div class="word" data-word="Rowoon" onclick="handleSelection('Rowoon')">Rowoon</div>
+
+    <p id="congrats-message">¡Felicidades! ¡Has conseguido una pista de la contraseña! es el 3 🎁</p>
+
+    <script>
+        const imagesAndWords = [
+            { imgSrc: 'https://storage.googleapis.com/tribunamexico/2023/08/FekUrB5l-Jungkook.jpg', word: 'Jungkook' },
+            { imgSrc: 'https://assets-global.website-files.com/5e489c8b9ce534262566819f/6470c62deb26aa9e1702d707_Mackenyu%20x%20Timid%2005.0880129_R.jpg', word: 'Mackenyu' },
+            { imgSrc: 'https://heraldodemexico.com.mx/u/fotografias/m/2023/4/13/f850x638-710827_788316_5050.jpg', word: 'Cha eun woo' },
+            { imgSrc: 'https://i.pinimg.com/originals/91/30/96/913096c98e5900df6c2a6a1dfb7c002c.jpg', word: 'Rowoon' },
+            { imgSrc: 'https://i.pinimg.com/736x/43/4c/ec/434cec4c9ca156594e066ed0294403c5.jpg', word: 'Park seo joon' }
+        ];
+
+        let selectedImage = null;
+        let selectedWord = null;
+        let correctMatches = 0;
+
+        function createCards() {
+            const container = document.getElementById('game-container');
+
+            imagesAndWords.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.innerHTML = `<img src="${item.imgSrc}" alt="${item.word}" width="100" height="100" onclick="handleImageSelection(this, '${item.word}')">`;
+                container.appendChild(card);
+            });
+        }
+
+        function handleImageSelection(element, word) {
+            resetSelections();
+            selectedImage = element;
+            selectedWord = word;
+            applyHighlight(selectedImage);
+        }
+
+        function handleSelection(word) {
+            if (selectedImage) {
+                selectedWord = word;
+                checkMatch();
+            } else {
+                alert('Selecciona primero una imagen.');
+            }
+        }
+
+        function resetSelections() {
+            if (selectedImage) {
+                removeHighlight(selectedImage);
+                selectedImage = null;
+            }
+
+            selectedWord = null;
+        }
+
+        function applyHighlight(element) {
+            element.classList.add('selected');
+        }
+
+        function removeHighlight(element) {
+            element.classList.remove('selected');
+        }
+
+        function checkMatch() {
+            const congratsMessage = document.getElementById('congrats-message');
+
+            if (selectedImage && selectedWord) {
+                if (selectedImage.alt === selectedWord) {
+                    correctMatches++;
+                    applyHighlight(selectedImage);
+                    selectedImage.style.display = 'none';
+                    const matchingWord = document.querySelector(`.word[data-word="${selectedWord}"]`);
+                    matchingWord.style.display = 'none';
+
+                    if (correctMatches === imagesAndWords.length) {
+                        congratsMessage.style.display = 'block';
+                    }
+                } else {
+                    alert('Incorrecto. Intenta de nuevo.');
+                }
+
+                resetSelections();
+            }
+        }
+
+        window.onload = createCards;
+    </script>
+</body>
+</html>
